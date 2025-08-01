@@ -28,7 +28,7 @@ export default function Chat() {
         isLoading={sessionsLoading}
       />
       
-      <div className="flex-1 w-full flex flex-col">
+      <div className="flex-1 w-full flex ">
         <ChatArea session={activeSession} />
       </div>
       

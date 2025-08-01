@@ -74,7 +74,7 @@ export function Sidebar({ sessions, activeSessionId, isLoading }: SidebarProps) 
       </div>
 
       {/* Navigation Menu */}
-      <nav className="p-4 space-y-2">
+      <nav className="p-4 space-y-2 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (

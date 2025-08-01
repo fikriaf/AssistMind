@@ -18,7 +18,7 @@ export function ChatArea({ session }: ChatAreaProps) {
 
   if (!session) {
     return (
-      <div className="flex mt-[5rem] justify-center h-full min-h-0">
+      <div className="flex mt-[5rem] justify-center h-full min-h-0 w-full">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gold mb-4">Welcome to AssistMind AI</h2>
           <p className="text-gray-400 mb-6">Start a new conversation or select an existing chat</p>
@@ -37,7 +37,7 @@ export function ChatArea({ session }: ChatAreaProps) {
             </div>
           </div>
         </div>
-        <div className="flex w-screen absolute bottom-0 z-50"><AnimatedAIChat /></div>
+        <div className="flex w-full absolute bottom-0 z-10 pointer-events-none"><AnimatedAIChat /></div>
       </div>
     );
   }
