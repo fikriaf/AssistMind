@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { Share, Bookmark, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { InputTabs } from "./input-tabs";
+import { InputTabs } from "../input-tabs";
 import { MessageBubble } from "./message-bubble";
 import type { ChatSession, Message } from "@shared/schema";
+import { AnimatedAIChat } from "./AnimatedChatArea";
 
 interface ChatAreaProps {
   session?: ChatSession;
@@ -17,9 +18,9 @@ export function ChatArea({ session }: ChatAreaProps) {
 
   if (!session) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex mt-[5rem] justify-center h-full min-h-0">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gold mb-4">Welcome to Luxe AI</h2>
+          <h2 className="text-2xl font-bold text-gold mb-4">Welcome to AssistMind AI</h2>
           <p className="text-gray-400 mb-6">Start a new conversation or select an existing chat</p>
           <div className="space-y-3 max-w-md">
             <div className="bg-gray-800 rounded-2xl p-4 text-left border border-gray-700 hover:border-gold transition-colors cursor-pointer">
@@ -36,6 +37,7 @@ export function ChatArea({ session }: ChatAreaProps) {
             </div>
           </div>
         </div>
+        <div className="flex w-screen absolute bottom-0 z-50"><AnimatedAIChat /></div>
       </div>
     );
   }

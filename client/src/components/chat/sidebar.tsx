@@ -66,10 +66,10 @@ export function Sidebar({ sessions, activeSessionId, isLoading }: SidebarProps) 
   ];
 
   return (
-    <div className="w-64 bg-obsidian border-r border-gray-800 flex flex-col">
+    <div className="w-64 bg-obsidian border-r border-gray-800 flex flex-col h-full min-h-0">
       {/* Logo/Brand Area */}
       <div className="p-6 border-b border-gray-800">
-        <h1 className="text-xl font-bold text-gold">Luxe AI</h1>
+        <h1 className="text-xl font-bold text-gold">AssistMind AI</h1>
         <p className="text-sm text-gray-400 mt-1">Executive Assistant</p>
       </div>
 

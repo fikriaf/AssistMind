@@ -32,7 +32,7 @@ export function OutputPreview() {
   };
 
   return (
-    <div className="w-96 border-l border-gray-800 bg-gray-900 flex flex-col">
+    <div className="w-96 border-l border-gray-800 bg-gray-900 flex flex-col h-full min-h-0">
       {/* Preview Header */}
       <div className="p-4 border-b border-gray-800">
         <div className="flex items-center justify-between">

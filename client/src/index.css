@@ -52,6 +52,8 @@
   --ring: hsl(51, 100%, 50%);
 }
 
+
+
 @layer base {
   * {
     @apply border-border;

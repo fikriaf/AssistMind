@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/chat/sidebar";
 import { ChatArea } from "@/components/chat/chat-area";
 import { OutputPreview } from "@/components/chat/output-preview";
 import type { ChatSession } from "@shared/schema";
+import { AnimatedAIChat } from "@/components/chat/AnimatedChatArea";
 
 export default function Chat() {
   const { sessionId } = useParams<{ sessionId?: string }>();
@@ -20,14 +21,14 @@ export default function Chat() {
   const activeSession = sessionId ? currentSession : sessions?.[0];
 
   return (
-    <div className="flex h-screen bg-obsidian text-platinum">
+    <div className="flex h-screen overflow-hidden bg-obsidian text-platinum">
       <Sidebar 
         sessions={sessions || []} 
         activeSessionId={activeSession?.id}
         isLoading={sessionsLoading}
       />
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 w-full flex flex-col">
         <ChatArea session={activeSession} />
       </div>
       

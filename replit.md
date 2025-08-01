@@ -1,6 +1,6 @@
 # Overview
 
-This is a modern full-stack AI chat application called "Luxe AI" - an executive assistant for strategic insights and analysis. The application features a React frontend with TypeScript, Express.js backend, and PostgreSQL database with Drizzle ORM. It provides a sophisticated chat interface with features like file uploads, prompt templates, message management, and a real-time preview system.
+This is a modern full-stack AI chat application called "AssistMind AI" - an executive assistant for strategic insights and analysis. The application features a React frontend with TypeScript, Express.js backend, and PostgreSQL database with Drizzle ORM. It provides a sophisticated chat interface with features like file uploads, prompt templates, message management, and a real-time preview system.
 
 # User Preferences
 
