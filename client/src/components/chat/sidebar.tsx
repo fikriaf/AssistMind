@@ -58,7 +58,6 @@ export function Sidebar({ sessions, activeSessionId, isLoading }: SidebarProps) 
   );
 
   const navItems = [
-    { icon: Search, label: "Search", path: "/search", active: false },
     { icon: MessageSquare, label: "Chats", path: "/chat", active: location.startsWith("/chat") },
     { icon: Folder, label: "Files", path: "/files", active: false },
     { icon: Lightbulb, label: "Prompts", path: "/prompts", active: false },
@@ -74,7 +73,7 @@ export function Sidebar({ sessions, activeSessionId, isLoading }: SidebarProps) 
       </div>
 
       {/* Navigation Menu */}
-      <nav className="p-4 space-y-2 overflow-y-auto">
+      <nav className="p-4 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
