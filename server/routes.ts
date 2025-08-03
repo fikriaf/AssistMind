@@ -3,6 +3,12 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertChatSessionSchema, insertMessageSchema, insertFileSchema } from "@shared/schema";
 import { z } from "zod";
+import MistralClient from '@mistralai/mistralai';
+import dotenv from "dotenv";
+dotenv.config();
+
+const apiKey = process.env.VITE_MISTRAL_API_KEY!;
+const client =  new MistralClient(apiKey);
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Chat Sessions
@@ -69,18 +75,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sessionId: req.params.sessionId
       });
       
-      // Create user message
-      const userMessage = await storage.createMessage(data);
-      
-      // Simulate AI response (in a real app, this would call an AI service)
-      const aiResponse = await generateAIResponse(data.content);
-      const assistantMessage = await storage.createMessage({
+
+      // Buat user message
+      await storage.createMessage(data);
+
+      // Set header streaming
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
+      res.setHeader("Transfer-Encoding", "chunked");
+      res.flushHeaders();
+
+      console.log("STARTING STREAMING...");
+      // Streaming dari Mistral langsung
+      const stream = await client.chatStream({
+        model: "mistral-large-latest",
+        messages: [{ role: "user", content: data.content }],
+      });
+
+      let fullResponse = "";
+
+      for await (const chunk of stream) {
+        
+        const delta = (chunk as any).choices?.[0]?.delta?.content;
+        if (delta) {
+          fullResponse += delta;
+          res.write(delta);
+        }
+      }
+
+      res.end();
+
+      await storage.createMessage({
         sessionId: req.params.sessionId,
-        content: aiResponse,
+        content: fullResponse,
         role: "assistant"
       });
-      
-      res.status(201).json({ userMessage, assistantMessage });
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid message data", errors: error.errors });
@@ -88,6 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create message" });
     }
   });
+
 
   // Files
   app.get("/api/sessions/:sessionId/files", async (req, res) => {
@@ -153,103 +183,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Simulate AI response generation
-async function generateAIResponse(userMessage: string): Promise<string> {
-  // In a real application, this would call an AI service like OpenAI
-  // For now, we'll generate contextual responses based on keywords
-  
-  const message = userMessage.toLowerCase();
-  
-  if (message.includes("strategy") || message.includes("planning")) {
-    return `## Strategic Analysis
 
-Based on your request, here are key strategic considerations:
 
-### Market Positioning
-- Analyze current market dynamics and competitive landscape
-- Identify unique value propositions and differentiation opportunities
-- Assess resource allocation and capability gaps
+// export async function generateAIResponse(userMessage: string): Promise<string> {
+//   const stream = await client.chat.stream({
+//     model: 'mistral-large-latest',
+//     messages: [{ role: 'user', content: userMessage }],
+//   });
 
-### Implementation Framework
-1. **Phase 1**: Market research and competitive analysis
-2. **Phase 2**: Strategic planning and resource alignment
-3. **Phase 3**: Execution and performance monitoring
+//   let fullResponse = '';
 
-### Key Performance Indicators
-- Market share growth: Target 15-20% increase
-- Revenue diversification: Reduce dependency on single revenue streams
-- Customer acquisition cost: Optimize to industry benchmarks
+//   for await (const chunk of stream) {
+//     const delta = (chunk as any).choices?.[0]?.delta?.content;
+//     if (delta) {
+//       fullResponse += delta;
+//     }
+//   }
 
-Would you like me to elaborate on any specific aspect of this strategic framework?`;
-  }
-  
-  if (message.includes("financial") || message.includes("forecast") || message.includes("revenue")) {
-    return `## Financial Analysis
 
-### Revenue Projections
-- Q4 revenue forecast: Based on current trends and market conditions
-- Growth trajectory: Analyzing historical performance and market indicators
-- Risk factors: Economic uncertainties and competitive pressures
-
-### Cost Structure Optimization
-- Fixed costs: Review and optimize operational expenses
-- Variable costs: Identify efficiency opportunities
-- Capital allocation: Strategic investment priorities
-
-### Key Financial Metrics
-| Metric | Current | Target | Variance |
-|--------|---------|--------|----------|
-| Gross Margin | 32% | 35% | +3% |
-| Operating Margin | 12% | 15% | +3% |
-| ROI | 18% | 22% | +4% |
-
-Recommendations for financial performance improvement are available upon request.`;
-  }
-  
-  if (message.includes("market") || message.includes("analysis") || message.includes("research")) {
-    return `## Market Research Insights
-
-### Current Market Dynamics
-- Market size and growth potential analysis
-- Consumer behavior patterns and preferences
-- Emerging trends and disruption factors
-
-### Competitive Landscape
-- Key player analysis and market positioning
-- Competitive advantages and vulnerabilities
-- Market share distribution and dynamics
-
-### Opportunities & Threats
-**Opportunities:**
-- Emerging market segments with high growth potential
-- Technology adoption creating new business models
-- Regulatory changes opening new markets
-
-**Threats:**
-- Increased competition from new market entrants
-- Economic uncertainty affecting consumer spending
-- Rapid technological changes requiring adaptation
-
-Would you like detailed analysis on any specific market segment?`;
-  }
-  
-  // Default response for general queries
-  return `Thank you for your inquiry. I've analyzed your request and can provide comprehensive insights.
-
-## Executive Summary
-Your query touches on important business considerations that require strategic thinking and data-driven analysis.
-
-## Key Recommendations
-1. **Immediate Actions**: Prioritize high-impact, low-effort initiatives
-2. **Medium-term Strategy**: Develop comprehensive plans with clear milestones
-3. **Long-term Vision**: Align initiatives with broader organizational goals
-
-## Next Steps
-I recommend we dive deeper into specific areas of interest. Please let me know which aspects you'd like to explore further:
-- Strategic planning and implementation
-- Financial modeling and forecasting
-- Market analysis and competitive intelligence
-- Risk assessment and mitigation strategies
-
-How would you like to proceed with this analysis?`;
-}
+//   return fullResponse;
+// }

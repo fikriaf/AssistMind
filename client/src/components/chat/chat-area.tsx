@@ -1,20 +1,34 @@
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Share, Bookmark, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { InputTabs } from "../input-tabs";
+import { InputTabs } from "./input-tabs";
 import { MessageBubble } from "./message-bubble";
 import type { ChatSession, Message } from "@shared/schema";
 import { AnimatedAIChat } from "./AnimatedChatArea";
 
 interface ChatAreaProps {
   session?: ChatSession;
+  previewBlocks: string[];
+  setPreviewBlocks: React.Dispatch<React.SetStateAction<string[]>>;
+  setLivePreviewBlock: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function ChatArea({ session }: ChatAreaProps) {
+export function ChatArea({ session, previewBlocks, setPreviewBlocks, setLivePreviewBlock }: ChatAreaProps) {
+  const [streamingResponse, setStreamingResponse] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [isStructuredFormat, setIsStructuredFormat] = useState(false);
+
   const { data: messages, isLoading } = useQuery<Message[]>({
     queryKey: ["/api/sessions", session?.id, "messages"],
     enabled: !!session?.id,
   });
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, streamingResponse]);
 
   if (!session) {
     return (
@@ -80,9 +94,26 @@ export function ChatArea({ session }: ChatAreaProps) {
             ))}
           </div>
         ) : messages && messages.length > 0 ? (
-          messages.map((message) => (
-            <MessageBubble key={message.id} message={message} />
-          ))
+          <>
+            {messages.map((message) => (
+              <MessageBubble key={message.id} message={message} />
+            ))}
+
+            {streamingResponse && (
+              <MessageBubble
+                message={{
+                  id: "streaming",
+                  content: streamingResponse,
+                  role: "assistant",
+                  timestamp: new Date(),
+                  sessionId: session.id,
+                  metadata: null,
+                }}
+              />
+            )}
+
+            <div ref={messagesEndRef} />
+          </>
         ) : (
           <div className="text-center text-gray-400 py-12">
             <p>No messages yet. Start the conversation!</p>
@@ -91,7 +122,16 @@ export function ChatArea({ session }: ChatAreaProps) {
       </div>
 
       {/* Input Area */}
-      <InputTabs sessionId={session.id} />
+      <InputTabs
+        sessionId={session.id}
+        streamingResponse={streamingResponse}
+        setStreamingResponse={setStreamingResponse}
+        isStructuredFormat={isStructuredFormat}
+        setIsStructuredFormat={setIsStructuredFormat}
+        previewBlocks={previewBlocks}
+        setPreviewBlocks={setPreviewBlocks}
+        setLivePreviewBlock={setLivePreviewBlock}
+      />
     </>
   );
 }

@@ -3,6 +3,8 @@ import { Bot, Copy, ThumbsUp, Check, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import type { Message } from "@shared/schema";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MessageBubbleProps {
   message: Message;
@@ -161,7 +163,25 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             </div>
             <div className="bg-bronze text-white rounded-2xl rounded-tl-md px-6 py-4 shadow-lg">
               <div className="space-y-3">
-                {renderContent(message.content)}
+                <ReactMarkdown
+  remarkPlugins={[remarkGfm]}
+  components={{
+    ol: (props) => <ol className="list-decimal pl-5" {...props} />,
+    ul: (props) => <ul className="list-disc pl-5" {...props} />,
+    li: (props) => <li className="mb-1" {...props} />,
+    table: (props) => (
+      <table className="table-auto border-collapse border border-[--burgundy] my-3" {...props} />
+    ),
+    th: (props) => <th className="border border-[--burgundy] px-2 py-1 bg-[--burgundy]" {...props} />,
+    td: (props) => <td className="border border-[--burgundy] px-2 py-1" {...props} />,
+    blockquote: (props) => <blockquote className="border-l-4 border-[--burgundy] pl-4 italic text-gray-600" {...props} />,
+    h1: (props) => <h1 className="text-2xl font-bold text-[--primary] my-2" {...props} />,
+    h2: (props) => <h2 className="text-xl font-semibold text-[--primary] my-2" {...props} />,
+    h3: (props) => <h3 className="text-lg font-semibold text-[--primary] my-1" {...props} />,
+  }}
+>
+  {message.content}
+</ReactMarkdown>
               </div>
             </div>
           </div>

@@ -7,50 +7,167 @@ import { apiRequest } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import type { PromptTemplate } from "@shared/schema";
 
-interface InputTabsProps {
+export interface InputTabsProps {
   sessionId: string;
+  setStreamingResponse: React.Dispatch<React.SetStateAction<string>>;
+  streamingResponse: string;
+  isStructuredFormat: boolean;
+  setIsStructuredFormat: React.Dispatch<React.SetStateAction<boolean>>;
+  previewBlocks: string[];
+  setPreviewBlocks: React.Dispatch<React.SetStateAction<string[]>>;
+  setLivePreviewBlock: React.Dispatch<React.SetStateAction<string>>; 
 }
+
+
 
 type ActiveTab = "text" | "file" | "prompt";
 
-export function InputTabs({ sessionId }: InputTabsProps) {
+export function InputTabs({ sessionId, setStreamingResponse, streamingResponse, isStructuredFormat, setIsStructuredFormat, previewBlocks, setPreviewBlocks, setLivePreviewBlock}: InputTabsProps) {
   const [activeTab, setActiveTab] = useState<ActiveTab>("text");
   const [message, setMessage] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: number; type: string }>>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
 
+
+
   const { data: promptTemplates } = useQuery<PromptTemplate[]>({
     queryKey: ["/api/prompt-templates"],
   });
+  
+  const handleSendMessage = async () => {
+    const trimmed = message.trim();
+    if (!trimmed) return;
 
-  const sendMessageMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const response = await apiRequest("POST", `/api/sessions/${sessionId}/messages`, {
-        content,
-        role: "user",
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/sessions", sessionId, "messages"] });
-      setMessage("");
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
+    const optimisticMessage = {
+      id: crypto.randomUUID(),
+      content: trimmed,
+      role: "user",
+      createdAt: new Date().toISOString(),
+    };
+
+    queryClient.setQueryData(
+      ["/api/sessions", sessionId, "messages"],
+      (old: any) => {
+        const messages = Array.isArray(old) ? old : [];
+        return [...messages, optimisticMessage];
       }
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to send message",
-        variant: "destructive",
-      });
-    },
-  });
+    );
 
-  const handleSendMessage = () => {
-    if (!message.trim() || sendMessageMutation.isPending) return;
-    sendMessageMutation.mutate(message.trim());
+    setMessage("");
+    setStreamingResponse("");
+    const res = await fetch(`/api/sessions/${sessionId}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: trimmed, role: "user" }),
+    });
+
+    if (!res.body) throw new Error("No response body");
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    
+    let fullResponse = "";
+    let codeBlockOpen = false;
+    let currentBlockBuffer = "";
+    let backtickBuffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+
+      for (let i = 0; i < chunk.length; i++) {
+        const char = chunk[i];
+
+        if (char === '`') {
+          backtickBuffer += '`';
+
+          if (backtickBuffer === '```') {
+            backtickBuffer = ""; // Reset langsung
+
+            if (codeBlockOpen) {
+              // END BLOCK
+              const final = currentBlockBuffer;
+              setLivePreviewBlock(final); // jaga agar tetap tampil
+              setPreviewBlocks((prev) => [...prev, final]);
+
+              setTimeout(() => {
+                setLivePreviewBlock(""); // kosongkan setelah render
+              }, 0);
+
+              currentBlockBuffer = "";
+              codeBlockOpen = false;
+              setIsStructuredFormat(false);
+            } else {
+              // START BLOCK
+              let lang = "";
+              let j = i + 1;
+
+              while (j < chunk.length && /[a-zA-Z]/.test(chunk[j])) {
+                lang += chunk[j];
+                j++;
+              }
+
+              if (chunk[j] === '\n') j++; // Lewati newline
+
+              i = j - 1; // Pastikan posisi benar
+
+              currentBlockBuffer = `\`\`\`${lang}`;
+              codeBlockOpen = true;
+              setIsStructuredFormat(true);
+            }
+
+            continue;
+          }
+        continue;
+      }
+
+
+    if (backtickBuffer.length > 0) {
+      const all = backtickBuffer + char;
+      backtickBuffer = "";
+      if (codeBlockOpen) {
+        currentBlockBuffer += all;
+      } else {
+        fullResponse += all;
+        setStreamingResponse((prev) => prev + all);
+      }
+      continue;
+    }
+
+    if (codeBlockOpen) {
+      currentBlockBuffer += char;
+      setLivePreviewBlock(currentBlockBuffer.slice());
+    } else {
+      setStreamingResponse((prev) => {
+        const updated = prev + char;
+        fullResponse = updated;
+        return updated;
+      });
+    }
+  }
+}
+
+// Terakhir, simpan message asisten
+queryClient.setQueryData(
+  ["/api/sessions", sessionId, "messages"],
+  (old: any) => {
+    const messages = Array.isArray(old) ? old : [];
+    return [
+      ...messages,
+      {
+        id: crypto.randomUUID(),
+        content: fullResponse,
+        role: "assistant",
+        createdAt: new Date().toISOString(),
+      },
+    ];
+  }
+);
+
+setStreamingResponse("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -141,11 +258,11 @@ export function InputTabs({ sessionId }: InputTabsProps) {
                     onChange={handleTextareaChange}
                     onKeyDown={handleKeyDown}
                     className="w-full bg-gray-800 border-gray-700 rounded-2xl px-6 py-4 pr-14 text-platinum placeholder-gray-400 resize-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-colors min-h-[80px]"
-                    disabled={sendMessageMutation.isPending}
+                    // disabled={sendMessageMutation.isPending}
                   />
                   <Button
                     onClick={handleSendMessage}
-                    disabled={!message.trim() || sendMessageMutation.isPending}
+                    // disabled={!message.trim() || sendMessageMutation.isPending}
                     className="absolute bottom-3 right-3 w-10 h-10 bg-gold text-obsidian rounded-xl hover:bg-yellow-400 glow-gold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send className="h-4 w-4" />

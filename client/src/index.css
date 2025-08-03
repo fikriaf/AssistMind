@@ -52,7 +52,9 @@
   --ring: hsl(51, 100%, 50%);
 }
 
-
+.code {
+  margin: 0 !important;
+}
 
 @layer base {
   * {

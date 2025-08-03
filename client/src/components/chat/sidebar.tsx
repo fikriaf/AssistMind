@@ -117,7 +117,7 @@ export function Sidebar({ sessions, activeSessionId, isLoading }: SidebarProps) 
             </Button>
           </div>
 
-          <div className="flex-1 overflow-y-auto scrollbar-thin space-y-2">
+          <div className="flex-1 overflow-y-auto scrollbar-thin space-y-2 max-h-[10rem]">
             {isLoading ? (
               <div className="space-y-2">
                 {[...Array(3)].map((_, i) => (
