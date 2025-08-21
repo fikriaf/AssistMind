@@ -1,8 +1,4 @@
 
-<p align="center">
-	<img src="logo.png" alt="AssistMind Logo" width="120" />
-</p>
-
 <h1 align="center">AssistMind AI</h1>
 
 <p align="center">
@@ -19,6 +15,10 @@
 	<img src="https://img.shields.io/badge/PostgreSQL-15+-336791?logo=postgresql&logoColor=white" alt="PostgreSQL">
 	<img src="https://img.shields.io/badge/Drizzle%20ORM-0.x-8b5cf6?logo=drizzle&logoColor=white" alt="Drizzle ORM">
 	<img src="https://img.shields.io/badge/Tailwind_CSS-3+-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
+</p>
+
+<p align="center">
+	<img src="image.png" alt="AssistMind Logo" width="120" />
 </p>
 
 ---
