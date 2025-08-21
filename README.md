@@ -1,69 +1,104 @@
-# Overview
 
-This is a modern full-stack AI chat application called "AssistMind AI" - an executive assistant for strategic insights and analysis. The application features a React frontend with TypeScript, Express.js backend, and PostgreSQL database with Drizzle ORM. It provides a sophisticated chat interface with features like file uploads, prompt templates, message management, and a real-time preview system.
+<p align="center">
+	<img src="logo.png" alt="AssistMind Logo" width="120" />
+</p>
 
-# User Preferences
+<h1 align="center">AssistMind AI</h1>
 
-Preferred communication style: Simple, everyday language.
+<p align="center">
+	<b>Executive Assistant for Strategic Insights & Analysis</b>
+</p>
+
+<p align="center">
+	<a href="https://opensource.org/licenses/MIT">
+		<img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT">
+	</a>
+	<img src="https://img.shields.io/badge/Node.js-18+-green?logo=node.js&logoColor=white" alt="Node.js">
+	<img src="https://img.shields.io/badge/React-18+-61dafb?logo=react&logoColor=white" alt="React">
+	<img src="https://img.shields.io/badge/TypeScript-4+-3178c6?logo=typescript&logoColor=white" alt="TypeScript">
+	<img src="https://img.shields.io/badge/PostgreSQL-15+-336791?logo=postgresql&logoColor=white" alt="PostgreSQL">
+	<img src="https://img.shields.io/badge/Drizzle%20ORM-0.x-8b5cf6?logo=drizzle&logoColor=white" alt="Drizzle ORM">
+	<img src="https://img.shields.io/badge/Tailwind_CSS-3+-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
+</p>
+
+---
+
+AssistMind AI is a modern full-stack AI chat application designed to empower executives and teams with strategic insights and analysis. Featuring a robust chat interface, file uploads, prompt templates, message management, and real-time previews, AssistMind AI delivers a seamless and productive user experience.
+
+---
+
+
 
 # System Architecture
 
-## Frontend Architecture
-- **Framework**: React 18 with TypeScript using Vite as the build tool
-- **UI Library**: Comprehensive design system built on Radix UI primitives with shadcn/ui components
-- **Styling**: Tailwind CSS with a custom dark theme using CSS variables for colors (obsidian, gold, platinum color palette)
-- **State Management**: TanStack React Query for server state management and caching
-- **Routing**: Wouter for lightweight client-side routing
-- **Form Handling**: React Hook Form with Zod validation resolvers
+## Frontend
+- <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="20"/> React 18 + TypeScript (Vite)
+- <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/tailwindcss/tailwindcss-plain.svg" width="20"/> Tailwind CSS (custom dark theme)
+- <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/radixui/radixui-original.svg" width="20"/> Radix UI primitives & shadcn/ui
+- <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" width="20"/> TypeScript
+- <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/reactquery/reactquery-original.svg" width="20"/> TanStack React Query
+- Wouter (client-side routing)
+- React Hook Form + Zod (form validation)
 
-## Backend Architecture
-- **Runtime**: Node.js with Express.js framework using ESM modules
-- **Database ORM**: Drizzle ORM with PostgreSQL dialect for type-safe database operations
-- **Data Storage**: Dual storage approach with in-memory storage (MemStorage) for development and PostgreSQL for production
-- **API Design**: RESTful API with structured error handling and request logging middleware
-- **Development Tools**: Vite integration for hot module replacement in development mode
+## Backend
+- <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" width="20"/> Node.js (Express.js, ESM modules)
+- <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg" width="20"/> PostgreSQL (Drizzle ORM)
+- Dual storage: in-memory (dev) & PostgreSQL (prod)
+- RESTful API, structured error handling, request logging
+- Vite for hot module replacement (dev)
 
 ## Database Schema
-- **Chat Sessions**: Stores conversation metadata with UUID primary keys
-- **Messages**: Linked to sessions with role-based content (user/assistant) and optional metadata
-- **Uploaded Files**: File management with metadata including MIME types and sizes
-- **Prompt Templates**: Reusable templates organized by categories with active/inactive states
+- Chat Sessions: Conversation metadata (UUID primary keys)
+- Messages: Linked to sessions, role-based content (user/assistant)
+- Uploaded Files: File management with MIME types, sizes
+- Prompt Templates: Reusable, categorized, active/inactive
 
 ## Authentication & Security
-- Currently uses session-based approach with connect-pg-simple for PostgreSQL session storage
-- CORS and security headers configured through Express middleware
-- Input validation using Zod schemas for type safety
+- Session-based (connect-pg-simple, PostgreSQL)
+- CORS & security headers (Express middleware)
+- Input validation (Zod)
 
 ## Real-time Features
-- Live message updates through React Query's automatic refetching
-- Real-time chat interface with message bubbles and typing indicators
-- Output preview panel for displaying formatted responses
+- Live message updates (React Query auto-refetch)
+- Real-time chat UI: message bubbles, typing indicators
+- Output preview panel for formatted responses
 
-# External Dependencies
 
-## Database Services
-- **Neon Database**: Serverless PostgreSQL database using @neondatabase/serverless driver
-- **Drizzle Kit**: Database migration and schema management tool
+# Key Technologies
 
-## UI & Styling
-- **Radix UI**: Comprehensive set of accessible UI primitives for React
-- **Tailwind CSS**: Utility-first CSS framework with PostCSS processing
-- **Lucide React**: Modern icon library for consistent iconography
-- **Embla Carousel**: Touch-friendly carousel component
+- <img src="https://img.shields.io/badge/React-18+-61dafb?logo=react&logoColor=white" alt="React"/> React, TypeScript, Vite
+- <img src="https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white" alt="Node.js"/> Node.js, Express.js
+- <img src="https://img.shields.io/badge/PostgreSQL-15+-336791?logo=postgresql&logoColor=white" alt="PostgreSQL"/> PostgreSQL, Drizzle ORM
+- <img src="https://img.shields.io/badge/Tailwind_CSS-3+-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind CSS"/> Tailwind CSS, Radix UI, shadcn/ui
+- <img src="https://img.shields.io/badge/React_Query-5+-ff4154?logo=reactquery&logoColor=white" alt="React Query"/> TanStack React Query
+- <img src="https://img.shields.io/badge/Zod-3+-5f43e9?logo=zod&logoColor=white" alt="Zod"/> Zod, React Hook Form
+- <img src="https://img.shields.io/badge/Neon-Serverless-00e599?logo=neon&logoColor=white" alt="Neon"/> Neon Database
+- Lucide React, Embla Carousel, Class Variance Authority, clsx, tailwind-merge, date-fns, nanoid
 
-## Development & Build Tools
-- **Vite**: Fast build tool with TypeScript support and hot module replacement
-- **ESBuild**: Fast JavaScript bundler for production builds
-- **TSX**: TypeScript execution environment for development server
+# Getting Started
 
-## Form & Validation
-- **React Hook Form**: Performant forms library with minimal re-renders
-- **Zod**: TypeScript-first schema validation library
-- **Hookform Resolvers**: Integration between React Hook Form and Zod
+1. **Clone the repository**
+	```sh
+	git clone https://github.com/fikriaf/AssistMind.git
+	cd AssistMind
+	```
+2. **Install dependencies**
+	```sh
+	npm install
+	```
+3. **Configure environment variables**
+	- Copy `.env.example` to `.env` and fill in required values.
+4. **Run development server**
+	```sh
+	npm run dev
+	```
 
-## Utilities & Libraries
-- **TanStack React Query**: Powerful data synchronization for React applications
-- **Class Variance Authority**: Utility for creating variant-based component APIs
-- **CLSX & Tailwind Merge**: Conditional className utilities
-- **Date-fns**: Modern JavaScript date utility library
-- **Nanoid**: URL-safe unique string ID generator
+# License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<p align="center">
+  <img src="logo.png" alt="AssistMind Logo" width="60"/>
+</p>
