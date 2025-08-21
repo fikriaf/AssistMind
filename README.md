@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-	<img src="image.png" alt="AssistMind Logo" width="120" />
+	<img src="image.png" alt="AssistMind Logo" width="100%" />
 </p>
 
 ---
